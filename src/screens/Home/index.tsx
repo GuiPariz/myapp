@@ -1,47 +1,150 @@
-import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, Alert, FlatList } from "react-native";
 import { styles } from "./styles";
 import { Participant } from "../../components/Participant";
+import { useState } from "react";
 
 export function Home() {
-        // Adicionar novo participante ao evento
 
-    function handleParticipantAdd() {
-        console.log("Participant added");
+  // tipando participantes
+  type Participants = {
+    name: string;
+    id: number;
+  }
 
+  //state do input
+
+  const [participant, setParticipant] = useState<string>("")
+
+  //lista tipada
+
+  const [participantList, setParticipantList] = useState<Participants[]>([
+    {
+      name: 'Guilherme',
+      id: 1
+    },
+    {
+      name: 'Ricardo',
+      id: 2
+    },
+    {
+      name: 'Israel',
+      id: 3
+    },
+    {
+      name: 'Luiz',
+      id: 4
+    },
+    {
+      name: 'Juliano',
+      id: 5
+    },
+    {
+      name: 'Alberto',
+      id: 6
+    },
+    {
+      name: 'Kevin',
+      id: 7
+    },
+    {
+      name: 'Paulo',
+      id: 8
+    },
+    {
+      name: 'Diogo',
+      id: 9
+    },
+    {
+      name: 'Israel',
+      id: 10
+    },
+  ])
+
+  // Adicionar novo participante ao evento
+
+  function handleParticipantAdd() {
+    // verifica se o input está vazio
+    if (participant.trim() === "") {
+      return Alert.alert("Erro", "O nome do participante não pode estar vazio.");
     }
-        // Remover um paricipante do evento
-    function handleParticipantRemoved( name: string ) {
-        console.log(`${name} foi removido!`)
-
+    // verifica se o participante ja existe 
+    if (participantList.some(participants => participants.name === participant)){
+        return Alert.alert("Participante existe", " Já existe uma participant na lista com esse nome")
     }
+    // criando um novo participante
+    const newParticipant: Participants = {
+      name: participant,
+      id: participantList.length + 1
+    }
+    // adicionado o novo participante dentro da lista existente
+    setParticipantList(prev => [...prev, newParticipant])
+    setParticipant("");
+    Alert.alert('Adicionado', `Participante ${participant} adicionado com sucesso!`)
 
-    return (
-        <View style={styles.Container}>
-            <Text style={styles.eventName}>
-                Nome do Evento
-            </Text>
-            <Text style={styles.eventDate}>
-                Sábado, 8 de Agosto de 2025
-            </Text>
+  }
+  // Remover um paricipante do evento
+  function handleParticipantRemoved(name: string) {
 
-            <View style={styles.form}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nome do participante"
-                    placeholderTextColor={"#555"}
-                />
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleParticipantAdd}
-                >
-                    <Text style={styles.buttonText}>+</Text>
-                </TouchableOpacity>
-            </View>
+    Alert.alert('Remover', `Deseja remover o ${name}?`, [
+      {
+        text: 'sim',
+        onPress: () => Alert.alert('Deletado'),        
+      },
+      {
+        text: 'Não',
+        onPress: () => Alert.alert('Cancelado'),
+        style: 'cancel',
+      }
+      
+    ])
 
-            <Participant name='Guilherme' onRemove={()=> handleParticipantRemoved('Guilherme')}/>
-            <Participant name='Ricardo' onRemove={()=> handleParticipantRemoved('Ricaro')}/>
-            <Participant name='Israel' onRemove={()=> handleParticipantRemoved('Israel')}/>
-            <Participant name='Luiz' onRemove={()=> handleParticipantRemoved('Luiz')}/>
-        </View>
-    )
+    console.log(`${name} foi removido!`)
+
+  }
+
+  return (
+    <View style={styles.Container}>
+      <Text style={styles.eventName}>
+        Nome do Evento
+      </Text>
+      <Text style={styles.eventDate}>
+        Sábado, 8 de Agosto de 2025
+      </Text>
+
+      <View style={styles.form}>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome do participante"
+          placeholderTextColor={"#555"}
+          value={participant}
+          onChangeText={setParticipant}
+
+        />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleParticipantAdd}
+        >
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={participantList}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => (
+          <Participant
+            key={item.id}
+            name={item.name}
+            onRemove={() => handleParticipantRemoved(item.name)}
+          />
+        )}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <Text style={styles.emptyList}>Nenhum participante cadastrado</Text>
+        )}
+      />
+
+      
+    </View>
+  )
 }
