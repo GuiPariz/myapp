@@ -18,46 +18,6 @@ export function Home() {
   //lista tipada
 
   const [participantList, setParticipantList] = useState<Participants[]>([
-    {
-      name: 'Guilherme',
-      id: 1
-    },
-    {
-      name: 'Ricardo',
-      id: 2
-    },
-    {
-      name: 'Israel',
-      id: 3
-    },
-    {
-      name: 'Luiz',
-      id: 4
-    },
-    {
-      name: 'Juliano',
-      id: 5
-    },
-    {
-      name: 'Alberto',
-      id: 6
-    },
-    {
-      name: 'Kevin',
-      id: 7
-    },
-    {
-      name: 'Paulo',
-      id: 8
-    },
-    {
-      name: 'Diogo',
-      id: 9
-    },
-    {
-      name: 'Israel',
-      id: 10
-    },
   ])
 
   // Adicionar novo participante ao evento
@@ -83,12 +43,13 @@ export function Home() {
 
   }
   // Remover um paricipante do evento
-  function handleParticipantRemoved(name: string) {
+  function handleParticipantRemoved(name:string, id:number) {
+
 
     Alert.alert('Remover', `Deseja remover o ${name}?`, [
       {
         text: 'sim',
-        onPress: () => Alert.alert('Deletado'),        
+        onPress: () => setParticipantList(participantList.filter(participants => participants.id !== id)),        
       },
       {
         text: 'Não',
@@ -135,7 +96,7 @@ export function Home() {
           <Participant
             key={item.id}
             name={item.name}
-            onRemove={() => handleParticipantRemoved(item.name)}
+            onRemove={() => handleParticipantRemoved(item.name, item.id)}
           />
         )}
         showsVerticalScrollIndicator={false}
